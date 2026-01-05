@@ -1,0 +1,23 @@
+================================= Instruções para criação do conteiner projeto1 ================================================
+
+
+# Abra o terminal ou prompt de comando e navegue até a pasta onde você colocou os arquivos do projeto1 (não use espaço ou acento em nome de pasta)
+
+# Execute o comando abaixo para criar a imagem Docker no mesmo diretorio onde está o Dockerfile
+docker build -t dsa-terraform-image:projeto1 .
+
+
+# Execute o comando abaixo para criar o container Docker no Linux ou wsl 2
+docker run -dit --name dsa-projeto1 -v ./IaC:/iac dsa-terraform-image:projeto1 /bin/bash
+
+
+[NOTA: No Windows você deve substituir ./IaC pelo caminho completo da pasta, por exemplo: C:\DSA\Cap08\IaC]
+
+
+# Verifique as versões do Terraform e do AWS CLI com os comandos abaixo no container docker dsa-projeto1
+
+terraform version
+aws --version
+
+
+# ================================= Roteiro =========================================
