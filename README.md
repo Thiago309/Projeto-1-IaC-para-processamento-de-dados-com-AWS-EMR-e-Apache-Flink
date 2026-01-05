@@ -1,2 +1,2 @@
 # Projeto 1 IaC para processamento de dados com AWS EMR e Apache Flink
-O Projeto 1 tem como objetivo desenvolver uma solução robusta e escalável para processamento de dados, aproveitando as capacidades do AWS EMR (Elastic MapReduce) e do framework Apache Flink.
+O objetivo principal deste projeto é automatizar a configuração e o gerenciamento da infraestrutura necessária para executar pipelines de processamento de dados em lote e streaming, capazes de lidar com grandes volumes de dados com baixa latência. Automatizei o provisionamento da Infraestrutura de engenharia de dados através de IaC com Terraform no ambiente AWS utilizando o serviço de cluster EMR e o pacote de aplicativo Apache Flink. 
