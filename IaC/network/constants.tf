@@ -1,4 +1,3 @@
-
 # Define as zonas de disponibilidade
 
 variable "av_zone_a" {
