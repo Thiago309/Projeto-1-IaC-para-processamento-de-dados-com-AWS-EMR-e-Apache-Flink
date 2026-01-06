@@ -45,6 +45,7 @@ variable "core_instance_ebs_volume_size" { default = "80" }
 variable "security_configuration_name" { default = null }
 
 # Definição da variável 'log_uri' com valor padrão (substitua account-id pelo id da sua conta)
+# variable "log_uri" { default = "s3://dsa-projeto1-<account-id>" }
 variable "log_uri" { default = "s3://dsa-projeto1-<account-id>" }
 
 # Definição da variável 'configurations' com valor padrão nulo
