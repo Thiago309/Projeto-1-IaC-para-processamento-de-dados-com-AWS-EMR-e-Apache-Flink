@@ -1,6 +1,8 @@
 # Projeto 1 - Provisionando Infraestrutura de Processamento de Dados com AWS EMR e Apache Flink
 
-# Crie um bucket no S3 chamado dsa-p1-<account-id> e configure no arquivo emr.tf
+# Crie um bucket no S3 para os dados chamado dsa-p1-<account-id> e configure no arquivo emr.tf
+
+# Crie outro bucket no S3 para os arquivos de log chamado dsa-projeto1-<account-id> e configure no arquivo emr.tf
 
 # Inicializa o Terraform
 terraform init
