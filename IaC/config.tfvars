@@ -13,7 +13,7 @@ owner = "DSA"
 environment = "EMR"
 
 # Grupo de serviços
-emr_release_label = "emr-7.0.0"
+emr_release_label = "emr-7.12.0"
 
 # Instância do master
 emr_main_instance_type = "m5.xlarge"

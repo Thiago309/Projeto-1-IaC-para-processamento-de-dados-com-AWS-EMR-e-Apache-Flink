@@ -61,4 +61,3 @@ terraform plan -destroy -var-file config.tfvars -out terraform.tfplan
 
 # Executa o destroy
 terraform apply terraform.tfplan
-
