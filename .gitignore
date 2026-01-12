@@ -8,3 +8,7 @@ IaC/.terraform/providers/registry.terraform.io/hashicorp/local/2.6.1/linux_amd64
 IaC/.terraform/providers/registry.terraform.io/hashicorp/tls/4.1.0/linux_amd64/LICENSE.txt
 IaC/.terraform/providers/registry.terraform.io/hashicorp/tls/4.1.0/linux_amd64/terraform-provider-tls_v4.1.0_x5
 IaC/terraform.tfplan
+/IaC/generated/ssh
+IaC/terraform.tfstate
+IaC/.terraform.tfstate.lock.info
+IaC/terraform.tfstate.backup

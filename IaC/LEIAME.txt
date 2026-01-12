@@ -50,18 +50,18 @@ hdfs dfs -get nome-arquivo-no-HDFS
 # Os comandos abaixo devem ser executados no container Docker (máquina cliente)
 # Coloque o ID do seu cluster EMR
 
-aws emr add-steps --cluster-id j-32R8POOJ1HIMA \
+aws emr add-steps --cluster-id j-14RNI6Q1U71E3 \
 --steps Type=CUSTOM_JAR,Name=Job1_P1,Jar=command-runner.jar,\
 Args="flink","run","-m","yarn-cluster",\
 "/usr/lib/flink/examples/streaming/WordCount.jar",\
 "--input","hdfs:///user/root/input/dados.txt","--output","hdfs:///user/root/saidajob1/" \
 --region us-east-2
 
-aws emr add-steps --cluster-id j-32R8POOJ1HIMA \
+aws emr add-steps --cluster-id j-14RNI6Q1U71E3 \
 --steps Type=CUSTOM_JAR,Name=Job2_P1,Jar=command-runner.jar,\
 Args="flink","run","-m","yarn-cluster",\
 "/usr/lib/flink/examples/streaming/WordCount.jar",\
-"--input","s3://dsa-p1-<account-id>/dados.txt","--output","s3://dsa-p1-<account-id>/" \
+"--input","s3://dsa-p1-jobs-124645972365/job/dados.txt","--output","s3://dsa-p1-jobs-124645972365/" \
 --region us-east-2
 
 # Cria o Plan para o destroy e salva em disco
@@ -69,3 +69,6 @@ terraform plan -destroy -var-file config.tfvars -out terraform.tfplan
 
 # Executa o destroy
 terraform apply terraform.tfplan
+
+
+hdfs dfs -cp s3://dsa-p1-jobs-124645972365/job/dados.txt /user/root/input

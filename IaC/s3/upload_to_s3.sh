@@ -1,1 +1,0 @@
-aws s3 sync /iac/s3 s3://dsa-projeto1-124645972365/

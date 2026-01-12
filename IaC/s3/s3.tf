@@ -28,9 +28,15 @@ resource "aws_s3_bucket" "dsa_bucket_jobs" {
     Name        = "Dados"
     Environment = var.project
   }
+}
 
   #Realiza o upload dos dados para o bucket s3
-  provisioner "local-exec" {
-    command = "${path.module}/upload_to_s3.sh"
-  }
+# --- USE ISSO NO LUGAR ---
+resource "aws_s3_object" "upload_arquivos" {
+  for_each = fileset("${path.module}/job/", "**/*")
+
+  bucket = aws_s3_bucket.dsa_bucket_jobs.id  # O Terraform vai esperar o bucket ser criado aqui
+  key    = "job/${each.value}"
+  source = "${path.module}/job/${each.value}"
+  etag   = filemd5("${path.module}/job/${each.value}")
 }
