@@ -31,6 +31,12 @@ module "ssh" {
   environment = var.environment
 }
 
+module "s3_bucket" {
+  source = "./s3"
+  project = var.project
+  region = var.region
+}
+
 # Módulo da rede
 module "network" {
   source = "./network"
