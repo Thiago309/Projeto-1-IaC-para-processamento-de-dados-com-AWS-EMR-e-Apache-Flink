@@ -8,3 +8,7 @@
 
 > **Resumo:** O objetivo principal deste projeto é automatizar a configuração e o gerenciamento da infraestrutura necessária para executar pipelines de processamento de dados em lote e streaming, capazes de lidar com grandes volumes de dados com baixa latência. Automatizei o provisionamento da Infraestrutura de engenharia de dados através de IaC com Terraform no ambiente AWS utilizando o serviço de processamento distribuidos para big data: o EMR e o pacote de aplicativo Apache Flink. 
 ---
+
+## Diagrama de Arquitetura do Projeto
+
+![Diagrama](./assets/sem-grade.gif)
