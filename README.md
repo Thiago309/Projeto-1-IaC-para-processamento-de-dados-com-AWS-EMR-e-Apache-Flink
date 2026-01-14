@@ -11,4 +11,4 @@
 
 ## Diagrama de Arquitetura do Projeto
 
-![Diagrama](./assets/sem-grade.gif)
+![Diagrama](./assets/projeto1-sem-grade.gif)
