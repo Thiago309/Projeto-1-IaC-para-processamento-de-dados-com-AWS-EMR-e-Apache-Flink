@@ -39,6 +39,6 @@ PROJETO-1-IAC-PARA-PROCESSAMENTO-DE-DADOS-COM-AWS-EMR-E-APACHE-FLINK/
 └── README.md                  # Documentação oficial
 ```
 ---
-## Diagrama de Arquitetura do Projeto
+## ☁️ Diagrama de Arquitetura do Projeto
 
 ![Diagrama](./assets/projeto1-sem-grade.gif)
