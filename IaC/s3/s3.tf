@@ -4,7 +4,7 @@ variable "region" {}
 # Obtém informações da conta atual automaticamente
 data "aws_caller_identity" "current" {}
 
-# BUCKET 1: LOGS DO EMR
+# BUCKET 1: Logs do cluster EMR
 resource "aws_s3_bucket" "dsa_bucket_logs" {
   # Usa o ID da conta dinâmico (account_id) obtido pelo data source acima
   bucket = "dsa-${var.project}-logs-${data.aws_caller_identity.current.account_id}" 
@@ -18,7 +18,7 @@ resource "aws_s3_bucket" "dsa_bucket_logs" {
   }
 }
 
-# BUCKET 2: DADOS
+# BUCKET 2: Dados
 resource "aws_s3_bucket" "dsa_bucket_jobs" {
   bucket = "dsa-p1-jobs-${data.aws_caller_identity.current.account_id}"
 
@@ -30,8 +30,7 @@ resource "aws_s3_bucket" "dsa_bucket_jobs" {
   }
 }
 
-  #Realiza o upload dos dados para o bucket s3
-# --- USE ISSO NO LUGAR ---
+# Realiza o upload dos dados para o bucket s3
 resource "aws_s3_object" "upload_arquivos" {
   for_each = fileset("${path.module}/job/", "**/*")
 

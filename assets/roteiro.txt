@@ -1,0 +1,49 @@
+# ============================================================== Roteiro ================================================================
+
+1. Introdução
+
+Gancho: Como escalar o processamento de grandes volumes de dados de forma automatizada e eficiente?
+
+Apresentação: "Fala pessoal, tudo bem? Eu me chamo Thiago Vinicius e hoje vou apresentar a vocês um projeto de Engenharia de Dados focado em Infraestrutura como
+Código (IaC). O objetivo aqui é automatizar o provisionamento de um ecossistema de Big Data completo para processamentos de dados na nuvem com os serviços AWS."
+
+O Problema: Configurar o Apache Spark, Hadoop, Hive e o Apache Flink, todos apartir do zero, leva muito tempo e exige bastante conhecimento do 
+profissional que irá realizar essa tarefa, pois por serem ferramentas open-soucer, não existe instaladores, então o processo é todo manual. 
+Já com o cluster EMR (Elastic MapReduce), com simples cliques, o profissional realiza todo esse processo em pouco tempo e pode integra-ló com outros serviços 
+do mesmo ambiente AWS, como por exemplo: as Instancias EC2's, o Bucket S3 para armazenamento e serviços de IA como o SageMaker. 
+Porém, configurar o cluster EMR e redes VPC's manualmente é demorado e propenso a erros. Sendo assim, utilizei o Terraform para automatizar esse processo.
+
+
+
+2. Stack Tecnológica e Arquitetura (Mostrar o Diagrama de Arquitetura do Projeto)
+
+A infraestrutura foi provisionada via Terraform, assegurando reprodutibilidade e governança. O ambiente AWS foi configurado em Multi-AZ para garantir alta 
+disponibilidade e resiliência ao cluster de processamento.
+
+Para testar esse poder de processamento na prática, vou executar o WordCount, um script clássico do Apache Flink para contagem de palavras. Vou utilizar 
+um arquivo de texto armazenado no S3, que será processado dentro do sistema de arquivos distribuído (HDFS) no cluster EMR.
+Ao final, a saída do Job será enviada de volta para este bucket S3. Além disso, configurei o envio automático dos logs para um bucket separado, garantindo 
+a auditoria completa do pipeline de dados.
+
+E para o Ambiente de Controle: Criei um container Docker que funciona como uma máquina cliente, isolando todas as ferramentas de CLI e chaves de acesso.
+
+
+
+3. Estrutura do Código IaC
+
+Dica: Mostre as pastas no VS Code (baseado nas imagens que você enviou).
+
+Modularização: "Organizei o código em módulos para ser escalável:"
+
+emr/: Contém as definições do cluster e das instâncias EC2. Também temos 2 camadas de segurança. A interna com o IAM Role que define as permissões de acesso 
+do cluster EMR a outros serviços AWS. Como exemplo, o Amazon S3 é um serviço a parte do EMR e vai ser utilizado para armazenar os logs de processamento dos dados.~
+E para que isso seja possivel, tenho que permitir a integração entre ambos serviços.
+
+Tambem a camada externa com o grupo de segurança que funciona como um firewall definindo quem pode acessar a infraestrutura. Neste caso, vou permitir o acesso
+pela porta 22 que libera a conexão ssh atraves do container docker.
+
+network/: Define a VPC e as subnets onde o cluster e outros serviços residem. Tambem habilito a camada de disponibilidade Multi-AZ.
+
+s3/: Criam os buckets para armazenar os logs, as saidas do job e o arquivo dados.txt que será processado.
+
+ssh/: Será responsavel por gerar as chaves de acesso para que possamos entrar no cluster e disparar o job.

@@ -152,7 +152,6 @@ resource "aws_emr_cluster" "emr_cluster" {
       step
     ]
   }
-
 }
 
 # Saída
