@@ -6,6 +6,9 @@ region = "us-east-2"
 # Projeto
 project = "projeto1"
 
+# Nome chave SSH
+name_ssh = "deployer"
+
 # Owner
 owner = "DSA"
 

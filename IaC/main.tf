@@ -9,6 +9,8 @@ variable "emr_core_instance_count" {}
 variable "project" {}
 variable "owner" {}
 variable "environment" {}
+variable "name_ssh" {}
+
 
 # Locals
 locals {
@@ -29,6 +31,7 @@ module "ssh" {
   source      = "./ssh"
   project     = var.project
   environment = var.environment
+  name_ssh    = var.name_ssh
 }
 
 module "s3_bucket" {
@@ -80,6 +83,6 @@ module "emr" {
 }
 
 # Output
-output "emr_main_address" {
-  value = module.emr.emr_main_address
+output "emr_main_connection_ssh" {
+  value = "ssh -i ${var.name_ssh} hadoop@${module.emr.emr_main_address}"
 }

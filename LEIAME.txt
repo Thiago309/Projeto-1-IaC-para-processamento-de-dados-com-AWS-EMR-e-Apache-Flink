@@ -18,6 +18,7 @@ docker run -dit --name dsa-projeto1 -v ./IaC:/iac dsa-terraform-image:projeto1 /
 
 terraform version
 aws --version
+aws configure
 
 ====================================================== Instruções para o Projeto1 =======================================================
 
