@@ -1,9 +1,9 @@
 # Configuração da chave de segurança para acesso via SSH
 
-# Variáveis
 variable "project" {}
 variable "environment" {}
 variable "name_ssh" {}
+
 # Algoritmo de criptografia da chave privada
 resource "tls_private_key" "ssh_private_key" {
   algorithm = "RSA"
