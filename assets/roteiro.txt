@@ -9,7 +9,7 @@ Código (IaC). O objetivo aqui é automatizar o provisionamento de um ecossistem
 
 O Problema: Configurar o Apache Spark, Hadoop, Hive e o Apache Flink, todos apartir do zero, leva muito tempo e exige bastante conhecimento do 
 profissional que irá realizar essa tarefa, pois por serem ferramentas open-soucer, não existe instaladores, então o processo é todo manual. 
-Já com o cluster EMR (Elastic MapReduce), com simples cliques, o profissional realiza todo esse processo em pouco tempo e pode integra-ló com outros serviços 
+Já com o serviço EMR (Elastic MapReduce), com simples cliques, o profissional realiza todo esse processo em pouco tempo e pode integra-ló com outros serviços 
 do mesmo ambiente AWS, como por exemplo: as Instancias EC2's, o Bucket S3 para armazenamento e serviços de IA como o SageMaker. 
 Porém, configurar o cluster EMR e redes VPC's manualmente é demorado e propenso a erros. Sendo assim, utilizei o Terraform para automatizar esse processo.
 
@@ -27,8 +27,6 @@ a auditoria completa do pipeline de dados.
 
 E para o Ambiente de Controle: Criei um container Docker que funciona como uma máquina cliente, isolando todas as ferramentas de CLI e chaves de acesso.
 
-
-
 3. Estrutura do Código IaC
 
 Dica: Mostre as pastas no VS Code (baseado nas imagens que você enviou).
@@ -38,9 +36,10 @@ Modularização: "Organizei o código em módulos para ser escalável:"
 emr/: Contém as definições do cluster e das instâncias EC2. Também temos 2 camadas de segurança. A interna com o IAM Role que define as permissões de acesso 
 do cluster EMR a outros serviços AWS. Como exemplo, o Amazon S3 é um serviço a parte do EMR e vai ser utilizado para armazenar os logs de processamento dos dados.
 E para que isso seja possivel, tenho que permitir a integração entre ambos serviços. Tambem a camada externa com o grupo de segurança que funciona como um firewall definindo quem 
-pode acessar a infraestrutura. Neste caso, vou permitir o acesso pela porta 22 que libera a conexão ssh atraves do container docker.
+pode acessar a infraestrutura. Neste caso, vou permitir o acesso pela porta 22 que libera a conexão ssh atraves do container docker. Tambem, vou permitir a comunicação
+entre os nós das instancias master e workers que estão no mesmo grupo de segurança.
 
-network/: Define a VPC e as subnets onde o cluster e outros serviços residem. Tambem habilito a camada de disponibilidade Multi-AZ. Essa opção não é obrigatoria,
+network/: Define a VPC e as subnets onde o cluster e outros serviços estão. Tambem habilito a camada de disponibilidade Multi-AZ. Essa opção não é obrigatoria,
 entretanto, é uma boa prática que cobre um dos pilares do WAF (Well Architected Framework). Esse Framework é uma ferramenta que ajuda o cliente a entender
 como projetar e operar sistemas de forma: confiavel, segura, eficiente e econômica na AWS. Pois já pensou se durante um grande processamento de dados, ocorresse
 alguma interrupção imprevista na zona de disponibilidade onde está acontecendo esse trabalho? Independente qual fosse o motivo, como por exemplo: Crises naturais, alguma manutenção 
@@ -102,7 +101,7 @@ git config --global --add safe.directory '*'
 
 
 [Preparando o ambiente com o HDFS - Hadoop]
-
+ssh -i deployer hadoop@ec2-3-140-238-231.us-east-2.compute.amazonaws.com
 
 10-Ir até o docker descktop e copiar a chave ssh gerada pela automação
 
@@ -131,12 +130,12 @@ git config --global --add safe.directory '*'
     7. ls -la
       
 17-Explicar o funcionamento do sistema distribuido hadoop.
-    O Hadoop trabalha com uma instancia master onde armazenamos os dados e executamos os comandos de processamentos com o Apache Flink, e com no minimo 
+    O Hadoop trabalha com uma instancia master onde armazenamos os dados e executamos os comandos de processamentos com o Apache Flink. E com no minimo 
     2 instancias worker's que são as maquinas de processamento, se não, não seria possivel trabalhar de forma distribuida com somente uma maquina.
     Logo após, o hadoop divide os dados em blocos e distribui entre as maquinas de processamento. Depois de finalizar o processamento, agrupa todos os blocos
     processados e encaminha novamente para a maquina master com o resultado da tarefa.
     
-18-Agora vou criar um diretorio como input de dados no hdfs (no container docker)
+18-Agora vou criar um diretorio como input de dados no hdfs (com a maquina cliente no container docker)
     1. hdfs dfs -ls / (Listamos todos os diretorios)
     2. hdfs dfs -ls /user
     3. hdfs dfs -ls /user/root (retorna vazia por que a pasta não existe)
@@ -147,14 +146,14 @@ git config --global --add safe.directory '*'
 20-Copie o arquivo dados.txt do bucket S3 para o sistema de arquivos distribuidos hadoop
     hdfs dfs -cp s3://dsa-p1-jobs-124645972365/job/dados.txt /user/root/input
 
-21-Conferirmos se o arquivo foi armazenado com sucesso em no sistema distribuido
+21-Conferirmos se o arquivo foi armazenado com sucesso no sistema distribuido
     hdfs dfs -ls /user/root/input
 
 
 [Executar o exemplo de processamento com o Apache Flink]
 
 
-22-Vamos até o diretorio da biblioteca do flink para mostrar os scrips de exemplos do flink
+22-Vamos até o diretorio da biblioteca do flink para mostrar os scrips de exemplos
     1. cd /usr/lib/flink/
     2. ls
     3. cd examples/
@@ -165,7 +164,7 @@ git config --global --add safe.directory '*'
 23-Voltamos para o diretório principal
     cd ~
 
-24-Vamos contar o número de ocorrências de cada palavra no arquivo usando Apache Flink
+24-Vamos contar o número de ocorrências de cada palavra no arquivo dados.txt usando Apache Flink
     flink run -m yarn-cluster /usr/lib/flink/examples/streaming/WordCount.jar --input hdfs:///user/root/input/dados.txt --output hdfs:///user/root/saida/
 
 25-Explicar como o flink funciona novamente.
@@ -237,9 +236,29 @@ plataforma para mostrar que tambem posso executar tarefas tambem por la.
 
 Salvando em arquivo: Primeiro eu vou explicar o comando que adiciona o step que armazena o resultado de forma temporária no sistema
 distribuido hadoop. O hadoop pessoal, funciona como uma memoria volatil, ou seja, quando falta energia todos os dados armazenados
-somem. Porem, semelhando a memoria RAM, ele foi criado pra processamento, esse é motivo da sua alta eficacia em bigdata.
+somem. Porem, semelhando a memoria RAM, ele foi criado pra processamento, esse é motivo da sua alta eficacia.
 
-aws emr add-steps --cluster-id j-14RNI6Q1U71E3 \
+explicando o código:
+
+eu informo qual serviço vou utilizar com o : AWS emr.
+
+indico o que eu quero fazer neste caso é adicionar steps :add steps.
+
+cluster-id : eu indico qual cluster eu quero realizar esse comando.
+
+informo que o comando a seguir vai ter do tipo custom JAR. Que é um arquivo customizado que contem classes em JAVA.
+
+Logo após, indico o nome do step.
+
+esse jar command-runner.jar : é o um comando que indica que o comando do step Job1_P1 deve ser executando atraves do hadoop
+
+e utilizo o apache flink para executar o comando com o gerenciador de cluster yarn utilizando o mesmo comando que fiz anteriormente
+de forma manual do wordcount.jar
+
+indico do job de processamento de dados, e logo aós o job de saida do processamento e indico a região onde esse comando desse ser executado.
+
+
+aws emr add-steps --cluster-id j-1QSAGQTAQKOWV \
 --steps Type=CUSTOM_JAR,Name=Job1_P1,Jar=command-runner.jar,\
 Args="flink","run","-m","yarn-cluster",\
 "/usr/lib/flink/examples/streaming/WordCount.jar",\
@@ -265,7 +284,7 @@ Args="flink","run","-m","yarn-cluster",\
 
 Salvando no Bucket S3: Armazena a saida do job de processamento de forma consistente.
 
-aws emr add-steps --cluster-id j-14RNI6Q1U71E3 \
+aws emr add-steps --cluster-id j-1QSAGQTAQKOWV \
 --steps Type=CUSTOM_JAR,Name=Job2_P1,Jar=command-runner.jar,\
 Args="flink","run","-m","yarn-cluster",\
 "/usr/lib/flink/examples/streaming/WordCount.jar",\
@@ -281,3 +300,27 @@ terraform plan -destroy -var-file config.tfvars -out terraform.tfplan
 
 39. Executa o destroy
 terraform apply terraform.tfplan
+
+
+
+
+
+======================================================== CONCLUSÃO =================================================================
+
+Conclusão e Call to Action (01:30 min)
+
+
+Bem pessoal, para concluir, vimos que neste projeto não foi apenas a criação de um cluster, mas a construção de um ambiente de pipeline de dados completo e resiliente.
+Ao unir o Terraform com o AWS EMR, removi possiveis erros humanos no processo de provisionamento. Tambem consegui provisionar 27 recursos na AWS de forma totalmente
+automatizada. Isso garante que, caso eu queira replicar esse ambiente em algum outro momento para um novo pipeline de produção, farei isso em questão de minutos, com total 
+previsibilidade de custos e segurança.
+
+Escolhi o Apache Flink rodando sobre o HDFS para mostrar que podemos processar grandes volumes de dados com baixa latência, enquanto o S3 atua como nossa camada de armazenamento
+ persistente. Essa arquitetura reflete o que há de mais moderno na Engenharia de Dados: que é a união entre a inteligência de processamento e a agilidade da cultura DevOps. 
+ É o que chamamos de levar a infraestrutura ao mesmo nível de excelência que o código do pipeline.
+
+Todo esse projeto está documentado aqui no meu GitHub. Como vocês podem ver aqui no repositório, eu estruturei o código de forma modular para que ele seja facilmente reaproveitado.
+No README.md, eu incluí um guia completo: desde a configuração das variáveis no Terraform até o passo a passo para submeter o job do Flink. Também deixei o Dockerfile disponível, 
+garantindo que qualquer pessoa consiga rodar esse projeto sem enfrentar problemas de dependências locais.
+
+Muito obrigado por assistir e nos vemos no próximo projeto!
