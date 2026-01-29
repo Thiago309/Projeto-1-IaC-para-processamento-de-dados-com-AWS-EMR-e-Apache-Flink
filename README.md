@@ -42,3 +42,8 @@ PROJETO-1-IAC-PARA-PROCESSAMENTO-DE-DADOS-COM-AWS-EMR-E-APACHE-FLINK/
 ## ☁️ Diagrama de Arquitetura do Projeto
 
 ![Diagrama](./assets/arquitetura-projeto.gif)
+
+---
+
+[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/AOyG7hU0t-I)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/thiagoviniciusbsantos/)
