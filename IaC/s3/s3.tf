@@ -18,6 +18,14 @@ resource "aws_s3_bucket" "dsa_bucket_logs" {
   }
 }
 
+#  Bloqueia o acesso público ao meu bucket S3
+resource "aws_s3_bucket_public_access_block" "block_access_logs" {
+  
+  bucket = aws_s3_bucket.dsa_bucket_logs.id
+  block_public_policy     = false
+  restrict_public_buckets = false
+}
+
 # BUCKET 2: Dados
 resource "aws_s3_bucket" "dsa_bucket_jobs" {
   bucket = "dsa-p1-jobs-${data.aws_caller_identity.current.account_id}"
@@ -30,10 +38,17 @@ resource "aws_s3_bucket" "dsa_bucket_jobs" {
   }
 }
 
+#  Bloqueia o acesso público ao meu bucket S3
+resource "aws_s3_bucket_public_access_block" "block_access_jobs" {
+
+  bucket = aws_s3_bucket.dsa_bucket_jobs.id
+  block_public_policy     = false
+  restrict_public_buckets = false
+}
+
 # Realiza o upload dos dados para o bucket s3
 resource "aws_s3_object" "upload_arquivos" {
   for_each = fileset("${path.module}/job/", "**/*")
-
   bucket = aws_s3_bucket.dsa_bucket_jobs.id  # O Terraform vai esperar o bucket ser criado aqui
   key    = "job/${each.value}"
   source = "${path.module}/job/${each.value}"
