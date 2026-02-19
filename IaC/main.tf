@@ -1,16 +1,8 @@
 # Arquivo principal de configuração
 
-# Variáveis
-variable "region" { default = "us-east-2" }
-variable "emr_release_label" {}
-variable "emr_main_instance_type" {}
-variable "emr_core_instance_type" {}
-variable "emr_core_instance_count" {}
-variable "project" {}
-variable "owner" {}
-variable "environment" {}
-variable "name_ssh" {}
-
+provider "aws" {
+  region  = var.region
+}
 
 # Locals
 locals {
@@ -22,9 +14,7 @@ locals {
 }
 
 # Provider
-provider "aws" {
-  region  = var.region
-}
+
 
 # Módulo do SSH
 module "ssh" {
@@ -70,8 +60,9 @@ module "emr" {
   project                      = var.project
   environment                  = var.environment
   tags                         = local.tags
+  name_bucket                  = module.s3_bucket.final_bucket_name 
   release_label                = var.emr_release_label
-  applications                 = ["Hadoop", "Flink", "Zeppelin"]
+  applications                 = var.applications
   main_instance_type           = var.emr_main_instance_type
   core_instance_type           = var.emr_core_instance_type
   core_instance_count          = var.emr_core_instance_count
@@ -80,6 +71,7 @@ module "emr" {
   vpc_id                       = module.network.vpc_id
   public_subnet                = module.network.public_subnet_2
   additional_security_group_id = module.network.integration_service_security_group_id
+  depends_on                   = [module.s3_bucket]
 }
 
 # Output

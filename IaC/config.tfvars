@@ -26,3 +26,6 @@ emr_core_instance_type = "m5.xlarge"
 
 # Número de workers
 emr_core_instance_count = "2"
+
+# Lista de aplicações a serem instaladas no cluster
+applications = ["Hadoop", "Spark", "Zeppelin"]

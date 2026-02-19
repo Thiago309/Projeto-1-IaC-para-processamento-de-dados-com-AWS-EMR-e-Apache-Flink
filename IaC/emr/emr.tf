@@ -38,15 +38,14 @@ variable "core_instance_type" { }
 # Definição da variável 'core_instance_count'
 variable "core_instance_count" { }
 
+# Variavel com o nome final do bucket S3 para armazenamento de logs
+variable "name_bucket" {}
+
 # Definição da variável 'core_instance_ebs_volume_size' com valor padrão
 variable "core_instance_ebs_volume_size" { default = "80" }
 
 # Definição da variável 'security_configuration_name' com valor padrão nulo
 variable "security_configuration_name" { default = null }
-
-# Definição da variável 'log_uri' com valor padrão (substitua account-id pelo id da sua conta)
-# variable "log_uri" { default = "s3://dsa-projeto1-<account-id>" }
-variable "log_uri" { default = "s3://dsa-projeto1-logs-124645972365" }
 
 # Definição da variável 'configurations' com valor padrão nulo
 variable "configurations" { default = null }
@@ -100,14 +99,13 @@ resource "aws_emr_cluster" "emr_cluster" {
   applications           = var.applications
   security_configuration = var.security_configuration_name
   service_role           = aws_iam_role.emr_service_role.arn
-  log_uri                = var.log_uri
+  log_uri                = "s3://${var.name_bucket}/logs/"
   configurations         = var.configurations
   step                   = var.steps
   tags                   = var.tags
 
   master_instance_group {
     instance_type  = var.main_instance_type
-    instance_count = "1"
   }
 
   core_instance_group {
@@ -152,9 +150,4 @@ resource "aws_emr_cluster" "emr_cluster" {
       step
     ]
   }
-}
-
-# Saída
-output "emr_main_address" {
-  value = aws_emr_cluster.emr_cluster.master_public_dns
 }
